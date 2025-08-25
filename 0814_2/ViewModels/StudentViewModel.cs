@@ -12,11 +12,10 @@ namespace _0814_2.ViewModels
 {
     class StudentViewModel
     {
-        public ObservableCollection <Student> Students { get; set; }
+        public ObservableCollection<Student> Students { get; set; }
         public string NewStudentName { get; set; }
         public ICommand AddStudentCommand { get; set; }
 
-        // 생성자 만들기
         public StudentViewModel()
         {
             Students = new ObservableCollection<Student>();
@@ -30,7 +29,6 @@ namespace _0814_2.ViewModels
                 Students.Add(new Student { Name = NewStudentName });
                 NewStudentName = "";
             }
-
         }
     }
 }

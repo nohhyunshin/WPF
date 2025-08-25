@@ -8,6 +8,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using _0814_2.ViewModels;
 
 // MVVM 패턴
 // 요리사 (Model)
@@ -33,11 +34,7 @@ namespace _0814_2.Views
         public MainWindow()
         {
             InitializeComponent();
-        }
-
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            MessageBox.Show("클릭!");
+            this.DataContext = new StudentViewModel();
         }
     }
 }

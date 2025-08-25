@@ -13,10 +13,11 @@
         </Grid.RowDefinitions>
 
         <GroupBox Header="학생들" Margin="10">
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="10">
-                <TextBox Text="{Binding StudentName}" Width="100" Height="35" Margin="10"/>
-                <TextBox Text="{Binding StudentAge}" Width="100" Height="35" Margin="10"/>
-                <TextBox Text="{Binding StudentGrade}" Width="100" Height="35" Margin="10"/>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center"
+                        Margin="10">
+                <TextBox Text="{Binding StudentName}" Width="100" Height="35" Margin="10" />
+                <TextBox Text="{Binding StudentAge}" Width="100" Height="35" Margin="10" />
+                <TextBox Text="{Binding StudentGrade}" Width="100" Height="35" Margin="10" />
             </StackPanel>
         </GroupBox>
     </Grid>

@@ -7,8 +7,15 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        
         <TextBlock Text="{Binding NewStudentName}"/>
-        <Button Content="추가" Command="{Binding AddStudentCommand}" Width="100" Height="40"/>
+        <Button Width="100" Height="40"
+            Content="추가" Command="{Binding AddStudentCommand}"/>
         <DataGrid ItemsSource="{Binding Students}"/>
     </Grid>
 </Window>
