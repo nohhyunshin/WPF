@@ -1,0 +1,62 @@
+﻿<Window x:Class="WPF.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WPF"
+        mc:Ignorable="d"
+        Title="OpenCV Project" Height="455" Width="700">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="70"/>
+            <RowDefinition Height="365"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center" Height="70">
+            <StackPanel Orientation="Horizontal" Height="60">
+                <Label Content="Error Code" Margin="0 0 3 0" VerticalAlignment="Center"/>
+                <ComboBox x:Name="ErrorCodeName" Text="코드 선택" Margin="3"  Width="100" Height="40" IsEditable="True"
+                          HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
+                    <ComboBoxItem x:Name="crazing" Content="Crazing"/>
+                    <ComboBoxItem x:Name="inclusion" Content="Inclusion"/>
+                    <ComboBoxItem x:Name="patches" Content="Patches"/>
+                    <ComboBoxItem x:Name="pitted" Content="Pitted"/>
+                    <ComboBoxItem x:Name="rolled" Content="Rolled"/>
+                    <ComboBoxItem x:Name="scratches" Content="Scratches"/>
+                </ComboBox>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" Height="60">
+                <Label Content="Date" Margin="0 0 3 0" VerticalAlignment="Center"/>
+                <DatePicker x:Name="ErrorDate" Margin="3" Width="150" Height="40"
+                            HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" Margin="5 0 5 0" Height="60">
+                <Border BorderBrush="Black" BorderThickness="2" Width="60" Height="40" Margin="5" CornerRadius="3">
+                    <Button Content="검색" Background="White" BorderBrush="Transparent" Click="SearchButton_Click"/>
+                </Border>
+                <Border BorderBrush="Black" BorderThickness="2" Width="60" Height="40" Margin="5" CornerRadius="3">
+                    <Button Content="저장" Background="White" BorderBrush="Transparent" Click="SaveButton_Click"/>
+                </Border>
+                <Border BorderBrush="Black" BorderThickness="2" Width="60" Height="40" Margin="5" CornerRadius="3">
+                    <Button Content="삭제" Background="White" BorderBrush="Transparent" Click="DelButton_Click"/>
+                </Border>
+            </StackPanel>
+        </StackPanel>
+
+        <StackPanel Grid.Row="1" Orientation="Vertical" VerticalAlignment="Top" Margin="5">
+            <GroupBox Header="Data" BorderBrush="DarkGray">
+                <DataGrid x:Name="DataGridErrors" Height="310" AutoGenerateColumns="False" CanUserSortColumns="True" 
+                          HeadersVisibility="Column" BorderBrush="DarkGray">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="No" Binding="{Binding ErrorIdx}" Width="100"/>
+                        <DataGridTextColumn Header="Error Code" Binding="{Binding ErrorName}" Width="*"/>
+                        <DataGridTextColumn Header="Date" Binding="{Binding ErrorTime}"  Width="*"/>
+                        <DataGridTextColumn Header="BMP File" Width="*"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </GroupBox>
+        </StackPanel>
+    </Grid>
+</Window>
