@@ -1,7 +1,10 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Text;
+using System.Text.Unicode;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -11,6 +14,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using ClosedXML.Excel;
 
 namespace WPF
 {
@@ -20,7 +24,7 @@ namespace WPF
     public partial class MainWindow : Window
     {
         public ObservableCollection<ErrorItem> ErrorList { get; set; }
-
+        private int errorIndex = 1;
         public MainWindow()
         {
             InitializeComponent();
@@ -86,7 +90,6 @@ namespace WPF
                 // 검색 조건이 없다면 필터 해제 → 전체 보기
                 view.Filter = null;
             }
-
             // 검색 후 초기화
             ErrorCodeName.Text = "코드 선택";    // 수정 필요
             ErrorCodeName.SelectedItem = null;
@@ -96,7 +99,69 @@ namespace WPF
         // 저장 버튼 클릭 (csv 파일로 출력)
         private void SaveButton_Click(object sender, RoutedEventArgs e)
         {
+            // 사용자가 파일 이름 지정 가능하게
+            SaveFileDialog saveFile = new SaveFileDialog
+            {
+                Filter = "Excel 파일 (*.xlsx)|*.xlsx|모든 파일 (*.*)|*.*",
+                DefaultExt = "xlsx",
+                FileName = $"Defective List_{DateTime.Now:yyyy.MM.dd}"
+            };
 
+            if (saveFile.ShowDialog() == true)
+            {
+                var filePath = saveFile.FileName;
+
+                // 감지된 에러 정보 가져오기
+                var items = DataGridErrors.ItemsSource as IEnumerable<ErrorItem>;
+                if (items == null) return;
+
+                XLWorkbook workbook;
+                IXLWorksheet ws;
+
+                if (File.Exists(filePath))
+                {
+                    // 기존 파일 열기
+                    workbook = new XLWorkbook(filePath);
+                    ws = workbook.Worksheet("Errors") ?? workbook.AddWorksheet("Errors");
+                }
+                else
+                {
+                    // 새 파일 생성
+                    workbook = new XLWorkbook();
+                    ws = workbook.AddWorksheet("Errors");
+                }
+
+                // 기존 마지막 행 확인
+                int lastRow = ws.LastRowUsed()?.RowNumber() ?? 0;
+                // 처음 저장하는 게 아니면 마지막 행 + 1부터 저장
+                int row = lastRow == 0 ? 1 : lastRow + 1;
+
+                // 처음 저장할 때만 열 머리글 작성
+                if (lastRow == 0)
+                {
+                    ws.Cell(1, 1).Value = "Part Number";
+                    ws.Cell(1, 2).Value = "Error Code";
+                    ws.Cell(1, 3).Value = "Date";
+                    row = 2;
+                }
+
+                foreach (var item in items)
+                {
+                    ws.Cell(row, 1).Value = item.ErrorIdx;
+                    ws.Cell(row, 2).Value = item.ErrorName;
+                    ws.Cell(row, 3).Value = item.ErrorTime;
+                    row++;
+                }
+
+                ws.Range(1, 1, row - 1, 3).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                ws.Range(1, 1, row - 1, 3).Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
+                ws.Columns().AdjustToContents();
+
+                workbook.SaveAs(filePath);
+                workbook.Dispose();
+            }
+            // 저장되면 리스트 초기화
+            ErrorList.Clear();
         }
 
         // 삭제 버튼 클릭 (선택 항목 개별 삭제)
@@ -110,6 +175,7 @@ namespace WPF
             }
         }
 
+        // 돌아가기 버튼
         private void ReturnButton_Click(object sender, RoutedEventArgs e)
         {
             ICollectionView view = CollectionViewSource.GetDefaultView(DataGridErrors.ItemsSource);

@@ -171,7 +171,7 @@ namespace WPF
                         crossedLine = true;
                     }
 
-                    if(crossedLine)
+                    if (crossedLine)
                     {
                         int idx = errorIndex++;
 
