@@ -64,22 +64,31 @@ namespace WPF
             // 선택된 항목 - Date
             var selectedDate = ErrorDate.SelectedDate;
 
-            if (view != null)
+            // 검색 조건이 있을 때만 필터 적용
+            if (!string.IsNullOrEmpty(selectedError) || selectedDate.HasValue)
             {
                 view.Filter = obj =>
                 {
                     var errorItem = obj as ErrorItem;
+                    if (errorItem == null) return false;
 
                     // OR 연산자이기 때문에 selectedError와 selectedDate가 비어 있는지를 검사하고
                     // OR 연산자는 둘 중 하나가 false면 최종적으로 false니까
                     // 값이 비어 있다면 true, 그리고 값이 있다면 일치하는가? 일치한다면 true 아니면 false
-                    return errorItem != null &&
-                           (string.IsNullOrEmpty(selectedError) || errorItem.ErrorName == selectedError) &&
-                           (!selectedDate.HasValue || (DateTime.TryParse(errorItem.ErrorTime, out DateTime errorDateTime)) && errorDateTime.Date == selectedDate.Value.Date);
+                    bool codeError = string.IsNullOrEmpty(selectedError) || errorItem.ErrorName == selectedError;
+                    bool dateError = !selectedDate.HasValue || (DateTime.TryParse(errorItem.ErrorTime, out DateTime errorDateTime)) && errorDateTime.Date == selectedDate.Value.Date;
+
+                    return codeError && dateError;
                 };
             }
+            else
+            {
+                // 검색 조건이 없다면 필터 해제 → 전체 보기
+                view.Filter = null;
+            }
+
             // 검색 후 초기화
-            ErrorCodeName.Text = ErrorCodeName.Text;
+            ErrorCodeName.Text = "코드 선택";    // 수정 필요
             ErrorCodeName.SelectedItem = null;
             ErrorDate.SelectedDate = null;
         }
@@ -98,6 +107,16 @@ namespace WPF
             if (selected != null)
             {
                 ErrorList.Remove(selected);
+            }
+        }
+
+        private void ReturnButton_Click(object sender, RoutedEventArgs e)
+        {
+            ICollectionView view = CollectionViewSource.GetDefaultView(DataGridErrors.ItemsSource);
+
+            if (view != null)
+            {
+                view.Filter = null;
             }
         }
     }

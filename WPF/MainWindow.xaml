@@ -13,6 +13,9 @@
         </Grid.RowDefinitions>
 
         <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center" Height="70">
+            <Border Width="20" Height="40" Margin="5" CornerRadius="3">
+                <Button Content="◀" Background="White" BorderBrush="Transparent" FontWeight="Bold" Click="ReturnButton_Click"/>
+            </Border>
             <StackPanel Orientation="Horizontal" Height="60">
                 <Label Content="Error Code" Margin="0 0 3 0" VerticalAlignment="Center"/>
                 <ComboBox x:Name="ErrorCodeName" Text="코드 선택" Margin="3"  Width="100" Height="40" IsEditable="True"
