@@ -15,6 +15,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using ClosedXML.Excel;
+using DocumentFormat.OpenXml.Wordprocessing;
+using Path = System.IO.Path;
 
 namespace WPF
 {
@@ -36,21 +38,23 @@ namespace WPF
         // DataGrid에 표시할 데이터 구조
         public class ErrorItem
         {
-            public int ErrorIdx { get; set; }
+            public string DefectiveCode { get; set; }
             public string ErrorName { get; set; }
             public string ErrorTime { get; set; }
+            public string Accuracy { get; set; }
         }
 
-        public void AddError(int idx, string errorName, DateTime time)
+        public void AddError(string defection, string errorName, DateTime time, string accuracy)
         {
             // UI 스레드 안전하게 업데이트
             Dispatcher.Invoke(() =>
             {
                 ErrorList.Add(new ErrorItem
                 {
-                    ErrorIdx = idx,
+                    DefectiveCode = defection,
                     ErrorName = errorName,
-                    ErrorTime = time.ToString("yyyy-MM-dd HH:mm:ss")
+                    ErrorTime = time.ToString("yyyy-MM-dd HH:mm:ss"),
+                    Accuracy = accuracy
                 });
             });
         }
@@ -80,7 +84,8 @@ namespace WPF
                     // OR 연산자는 둘 중 하나가 false면 최종적으로 false니까
                     // 값이 비어 있다면 true, 그리고 값이 있다면 일치하는가? 일치한다면 true 아니면 false
                     bool codeError = string.IsNullOrEmpty(selectedError) || errorItem.ErrorName == selectedError;
-                    bool dateError = !selectedDate.HasValue || (DateTime.TryParse(errorItem.ErrorTime, out DateTime errorDateTime)) && errorDateTime.Date == selectedDate.Value.Date;
+                    bool dateError = !selectedDate.HasValue || 
+                                     (DateTime.TryParse(errorItem.ErrorTime, out DateTime errorDateTime)) && errorDateTime.Date == selectedDate.Value.Date;
 
                     return codeError && dateError;
                 };
@@ -96,7 +101,7 @@ namespace WPF
             ErrorDate.SelectedDate = null;
         }
 
-        // 저장 버튼 클릭 (csv 파일로 출력)
+        // 저장 버튼 클릭 (excel 파일로 출력)
         private void SaveButton_Click(object sender, RoutedEventArgs e)
         {
             // 사용자가 파일 이름 지정 가능하게
@@ -142,23 +147,45 @@ namespace WPF
                     ws.Cell(1, 1).Value = "Part Number";
                     ws.Cell(1, 2).Value = "Error Code";
                     ws.Cell(1, 3).Value = "Date";
+                    ws.Cell(1, 4).Value = "Accuracy";
                     row = 2;
                 }
 
                 foreach (var item in items)
                 {
-                    ws.Cell(row, 1).Value = item.ErrorIdx;
+                    ws.Cell(row, 1).Value = item.DefectiveCode;
                     ws.Cell(row, 2).Value = item.ErrorName;
                     ws.Cell(row, 3).Value = item.ErrorTime;
+                    ws.Cell(row, 4).Value = item.Accuracy;
                     row++;
                 }
 
-                ws.Range(1, 1, row - 1, 3).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
-                ws.Range(1, 1, row - 1, 3).Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
+                ws.Range(1, 1, row - 1, 4).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                ws.Range(1, 1, row - 1, 4).Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
                 ws.Columns().AdjustToContents();
 
                 workbook.SaveAs(filePath);
                 workbook.Dispose();
+
+                // csv 자동 저장되지만 하나의 파일에 덮어쓰기
+                var csvFile = Path.Combine(@"C:\Users\user\Defection", "DefectiveList.csv");
+                Directory.CreateDirectory(Path.GetDirectoryName(csvFile));
+
+                bool csvExists = File.Exists(csvFile);
+
+                using (var writer = new StreamWriter(csvFile, false, Encoding.UTF8))
+                {
+                    // 파일이 없어서 새로 만드는 경우만 헤더 작성
+                    if (!csvExists)
+                    writer.WriteLine("Part Number, Error Code, Date, Accuracy");
+
+                    // 데이터
+                    foreach (var item in items)
+                    {
+                        string line = $"{item.DefectiveCode}, {item.ErrorName}, {item.ErrorTime}, {item.Accuracy}";
+                        writer.WriteLine(line);
+                    }
+                }
             }
             // 저장되면 리스트 초기화
             ErrorList.Clear();

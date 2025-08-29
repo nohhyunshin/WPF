@@ -39,11 +39,11 @@
                 <Border BorderBrush="Black" BorderThickness="2" Width="60" Height="40" Margin="5" CornerRadius="3">
                     <Button Content="검색" Background="White" BorderBrush="Transparent" Click="SearchButton_Click"/>
                 </Border>
-                <Border BorderBrush="Black" BorderThickness="2" Width="60" Height="40" Margin="5" CornerRadius="3">
-                    <Button Content="저장" Background="White" BorderBrush="Transparent" Click="SaveButton_Click"/>
+                <Border BorderBrush="Gray" BorderThickness="1" Width="40" Height="40" Margin="5" CornerRadius="2">
+                    <Button Content="💾" Background="White" BorderBrush="Transparent" Click="SaveButton_Click"/>
                 </Border>
-                <Border BorderBrush="Black" BorderThickness="2" Width="60" Height="40" Margin="5" CornerRadius="3">
-                    <Button Content="삭제" Background="White" BorderBrush="Transparent" Click="DelButton_Click"/>
+                <Border BorderBrush="Gray" BorderThickness="1" Width="40" Height="40" Margin="5" CornerRadius="2">
+                    <Button Content="🗑️" Background="White" BorderBrush="Transparent" Click="DelButton_Click"/>
                 </Border>
             </StackPanel>
         </StackPanel>
@@ -53,10 +53,10 @@
                 <DataGrid x:Name="DataGridErrors" Height="310" AutoGenerateColumns="False" CanUserSortColumns="True" 
                           HeadersVisibility="Column" BorderBrush="DarkGray">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="No" Binding="{Binding ErrorIdx}" Width="100"/>
+                        <DataGridTextColumn Header="Defect Code" Binding="{Binding ErrorIdx}" Width="*"/>
                         <DataGridTextColumn Header="Error Code" Binding="{Binding ErrorName}" Width="*"/>
                         <DataGridTextColumn Header="Date" Binding="{Binding ErrorTime}"  Width="*"/>
-                        <DataGridTextColumn Header="BMP File" Width="*"/>
+                        <DataGridTextColumn Header="Accuracy" Binding="{Binding Accuracy}" Width="*"/>
                     </DataGrid.Columns>
                 </DataGrid>
             </GroupBox>
